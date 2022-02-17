@@ -9,4 +9,4 @@ fi
 git add -A
 git commit -a
 
-printf "\n\nCommit finished."
+printf "\n\nCommit finished.\n"
