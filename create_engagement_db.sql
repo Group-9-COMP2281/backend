@@ -15,7 +15,7 @@ DROP SCHEMA IF EXISTS `engagement-db` ;
 -- -----------------------------------------------------
 -- Schema engagement-db
 -- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `engagement-db` DEFAULT CHARACTER SET utf8 ;
+CREATE SCHEMA IF NOT EXISTS `engagement-db` DEFAULT CHARACTER SET utf8mb4 ;
 USE `engagement-db` ;
 
 -- -----------------------------------------------------
