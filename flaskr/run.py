@@ -1,22 +1,18 @@
-from datetime import date
+import datetime
 
 import twint
 from flask import Flask
 from flaskext.mysql import MySQL
 
 import config
+from data import handler
+from data.engagement import post
 
 app = Flask(__name__)
 app.config.from_object(config.get_config('dev'))  # todo dynamically load from command line
 
 mysql = MySQL()
 mysql.init_app(app)
-
-conn = mysql.connect()
-cursor = conn.cursor()
-
-add_post = (
-    "INSERT INTO Post (post_id, post_author, post_text, date_posted, date_found, url) VALUES (%s, %s, %s, %s, %s, %s)")
 
 c = twint.Config()
 c.Limit = 20
@@ -53,12 +49,13 @@ for uni in uni_list:
     c.Search = 'IBM university ("' + uni + '") -filter:replies'
     twint.run.Search(c)
 
-#Write each tweet to database
+h = handler.DatabaseHandler(mysql)
 for tweet_object in twint.output.tweets_list:
-    new_post = (tweet_object.id, tweet_object.username, tweet_object.tweet, tweet_object.datestamp,
-                date.today().strftime('%Y-%m-%d'), tweet_object.link)
-    cursor.execute(add_post, new_post)
+    p = post.TwitterPost(tweet_object.id, tweet_object.username, tweet_object.tweet, tweet_object.datestamp,
+                            datetime.datetime.now(), tweet_object.link)
 
-conn.commit()
-conn.close()
+    h.insert_post(p)
+
+h.close()
+
 print("Data committed")
