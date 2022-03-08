@@ -26,7 +26,7 @@ DROP TABLE IF EXISTS `engagement-db`.`Post` ;
 CREATE TABLE IF NOT EXISTS `engagement-db`.`Post` (
   `post_id` VARCHAR(40) NOT NULL,
   `post_author` VARCHAR(15) NULL,
-  `post_text` VARCHAR(280) NULL,
+  `post_text` VARCHAR(500) NULL,
   `date_posted` DATETIME NOT NULL,
   `date_found` DATETIME NOT NULL,
   `url` VARCHAR(280) NULL,
