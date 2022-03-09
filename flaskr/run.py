@@ -53,22 +53,22 @@ counter = 0
 for uni in uni_list:
     c.Search = 'IBM university ("' + uni + '") -filter:replies'
     twint.run.Search(c)
-    #Get the last-added tweets
+    # Get the last-added tweets
     new_tweets = twint.output.tweets_list[counter::]
 
     for tweet_object in new_tweets[:]:
         if tweet_object.id_str not in tweet_unis:
             tweet_unis[tweet_object.id_str] = [uni]
 
-        #If tweet already exists because of mention of another uni name
+        # If tweet already exists because of mention of another uni name
         else:
-            #Append current uni name to list of uni names of this tweet
+            # Append current uni name to list of uni names of this tweet
             tweet_unis[tweet_object.id_str].append(uni)
             new_tweets.remove(tweet_object)
     
     all_tweets += new_tweets
     
-    #Update counter to length of entire list, to be able to slice from this point in the next loop
+    # Update counter to length of entire list, to be able to slice from this point in the next loop
     counter = len(twint.output.tweets_list)
 
 conn = mysql.connect()
