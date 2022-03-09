@@ -7,6 +7,7 @@ from flaskext.mysql import MySQL
 import config
 from data import handler
 from data.engagement import post
+from data.engagement import university
 
 app = Flask(__name__)
 app.config.from_object(config.get_config('dev'))  # todo dynamically load from command line
@@ -75,17 +76,20 @@ conn = mysql.connect()
 h = handler.DatabaseHandler(conn)
 
 # Uncomment if you want to delete all rows in Post and University table before adding new rows
-#h.delete_all_posts()
-#h.delete_all_universities()
+# h.delete_all_posts()
+# h.delete_all_universities()
+
+univ_posts = []
 
 for tweet_object in all_tweets:
     p = post.TwitterPost(tweet_object.id_str, tweet_object.username, tweet_object.tweet, tweet_object.datestamp,
                             datetime.datetime.now(), tweet_object.link)
 
-    post_id = h.insert_post(p)
+    univ_post = university.UniversityPost(tweet_unis[tweet_object.id_str], p)
+    univ_posts.append(univ_post)
 
-    for uni_name in tweet_unis[tweet_object.id_str]:
-        h.insert_university(uni_name, post_id)
+# insert all at once, in one big transaction, rather than lots. to increase performance and rollback ability.
+h.insert_posts(univ_posts, commit=True)
 h.close()
 
 print("Data committed")
