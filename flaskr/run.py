@@ -39,23 +39,53 @@ uni_list = ['Aberdeen', 'Abertay', 'Aberystwyth', 'Anglia Ruskin', 'Aston', 'Ban
             'Trinity Saint David', 'UCL', 'UEA', 'Ulster', 'University for the Creative Arts',
             'University of the Arts London', 'UWE Bristol', 'Warwick', 'West London', 'West of Scotland', 'Westminster',
             'Winchester', 'Wolverhampton', 'Worcester', 'York', 'York St John']
-uni_list = [x.lower().strip() for x in uni_list]
 
 # Shorten list for testing
 uni_list = uni_list[:38:]
+
+uni_list = [x.lower().strip() for x in uni_list]
+
+tweet_unis = {}
+all_tweets = []
+counter = 0
 
 # Run a search for each different university
 for uni in uni_list:
     c.Search = 'IBM university ("' + uni + '") -filter:replies'
     twint.run.Search(c)
+    #Get the last-added tweets
+    new_tweets = twint.output.tweets_list[counter::]
 
-h = handler.DatabaseHandler(mysql)
-for tweet_object in twint.output.tweets_list:
-    p = post.TwitterPost(tweet_object.id, tweet_object.username, tweet_object.tweet, tweet_object.datestamp,
+    for tweet_object in new_tweets[:]:
+        if tweet_object.id_str not in tweet_unis:
+            tweet_unis[tweet_object.id_str] = [uni]
+
+        #If tweet already exists because of mention of another uni name
+        else:
+            #Append current uni name to list of uni names of this tweet
+            tweet_unis[tweet_object.id_str].append(uni)
+            new_tweets.remove(tweet_object)
+    
+    all_tweets += new_tweets
+    
+    #Update counter to length of entire list, to be able to slice from this point in the next loop
+    counter = len(twint.output.tweets_list)
+
+conn = mysql.connect()
+h = handler.DatabaseHandler(conn)
+
+# Uncomment if you want to delete all rows in Post and University table before adding new rows
+#h.delete_all_posts()
+#h.delete_all_universities()
+
+for tweet_object in all_tweets:
+    p = post.TwitterPost(tweet_object.id_str, tweet_object.username, tweet_object.tweet, tweet_object.datestamp,
                             datetime.datetime.now(), tweet_object.link)
 
-    h.insert_post(p)
+    post_id = h.insert_post(p)
 
+    for uni_name in tweet_unis[tweet_object.id_str]:
+        h.insert_university(uni_name, post_id)
 h.close()
 
 print("Data committed")
