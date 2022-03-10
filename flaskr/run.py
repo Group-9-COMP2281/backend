@@ -8,6 +8,9 @@ import config
 from data import handler
 from data.engagement import post
 
+import re
+
+
 app = Flask(__name__)
 app.config.from_object(config.get_config('dev'))  # todo dynamically load from command line
 
@@ -46,6 +49,7 @@ uni_list = uni_list[:38:]
 uni_list = [x.lower().strip() for x in uni_list]
 
 tweet_unis = {}
+tweet_contents = []
 all_tweets = []
 counter = 0
 
@@ -57,14 +61,23 @@ for uni in uni_list:
     new_tweets = twint.output.tweets_list[counter::]
 
     for tweet_object in new_tweets[:]:
-        if tweet_object.id_str not in tweet_unis:
-            tweet_unis[tweet_object.id_str] = [uni]
+        # Removes hashtags and hyperlinks from tweet content
+        tweet_stripped = re.sub(r'\w+:\/{2}[\d\w-]+(\.[\d\w-]+)*(?:(?:\/[^\s/]*))*', '', tweet_object.tweet).replace("#", "")
+        if tweet_stripped not in tweet_contents:
+            tweet_contents.append(tweet_stripped)
 
-        # If tweet already exists because of mention of another uni name
+            if tweet_object.id_str not in tweet_unis:
+                tweet_unis[tweet_object.id_str] = [uni]
+
+            # If tweet already exists because of mention of another uni name
+            else:
+                # Append current uni name to list of uni names of this tweet
+                tweet_unis[tweet_object.id_str].append(uni)
+                new_tweets.remove(tweet_object)
         else:
-            # Append current uni name to list of uni names of this tweet
-            tweet_unis[tweet_object.id_str].append(uni)
             new_tweets.remove(tweet_object)
+        
+        
     
     all_tweets += new_tweets
     
