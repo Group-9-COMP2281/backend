@@ -1,5 +1,6 @@
 from typing import List
 
+from data.engagement import post
 from data.engagement import university
 
 
@@ -27,18 +28,13 @@ class DatabaseHandler:
                     (post_o.service_id, post_o.author, post_o.content, post_o.posted, post_o.found, post_o.url),
                 )
 
-                f = None
-                if post_o.post_id != -1:
-                    f = lambda univ_name: cursor.execute(
-                        "INSERT INTO `University` (`university_name`, `post_id`) VALUES (%s, %s)",
-                        (univ_name, post_o.post_id)
-                    )
-                else:
-                    f = lambda univ_name: cursor.execute(
-                        "INSERT INTO `University` (`university_name`, `post_id`) VALUES (%s, {})".format(
-                            "LAST_INSERT_ID()"
-                        ), (univ_name)
-                    )
+                insert_univ_query = "INSERT INTO `University` (`university_name`, `post_id`) VALUES (%s, {})"
+                f = lambda univ_name: cursor.execute(
+                    insert_univ_query.format(
+                        '%s' if post_o.post_id != -1 else 'LAST_INSERT_ID()'
+                    ),
+                    (univ_name, post_o.post_id) if post_o.post_id != -1 else (univ_name)
+                )
 
                 for name in univ_post.names:
                     f(name)
@@ -48,7 +44,7 @@ class DatabaseHandler:
 
     def insert_post(self, univ_post: university.UniversityPost, cursor=None, commit=False):
         return self.insert_posts([univ_post], cursor=cursor, commit=commit)
-    
+
     def delete_all_posts(self, cursor=None, commit=False):
         cursor = self._get_cursor(cursor)
 
@@ -56,7 +52,7 @@ class DatabaseHandler:
             cursor.execute(
                 "DELETE FROM `Post`"
             )
-        
+
         if commit:
             self.conn.commit()
 
@@ -67,10 +63,36 @@ class DatabaseHandler:
             cursor.execute(
                 "DELETE FROM `University`"
             )
-        
+
         if commit:
             self.conn.commit()
-            
+
+    def get_posts_where(self, cursor=None, min_id=-1, min_dt=None):
+        cursor = self._get_cursor(cursor)
+
+        query = "SELECT * FROM `Post`"
+        clauses = []
+        vars = []
+
+        if min_id > -1:
+            clauses.append('(`post_id` > %s)')
+            vars.append(min_id)
+        if min_dt:
+            clauses.append('(`date_posted` > %s)')
+            vars.append(min_dt)
+
+        if len(clauses):
+            query += ' WHERE '
+            query += ' AND '.join(clauses)
+
+        query += ';'
+
+        with cursor:
+            cursor.execute(query, tuple(vars))
+            res = cursor.fetchall()
+
+            return map(post.EngagementPost.from_row, res)
+
     def close(self):
         self.conn.commit()
         self.conn.close()

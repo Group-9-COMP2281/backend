@@ -9,12 +9,25 @@ class EngagementPost:
         self.found = found
         self.url = url
 
+    @staticmethod
+    def from_row(row):
+        return EngagementPost(
+            row[1], row[2], row[3], row[4], row[5], row[6],
+            post_id=row[0]
+        )
+
+    def to_json(self):
+        return {
+            'post_id': self.post_id,
+            'service_id': self.service_id,
+            'author': self.author,
+            'content': self.content,
+            'posted': self.posted,
+            'found': self.found,
+            'url': self.url,
+        }
+
     def __str__(self):
         return "EngagementPost[{},{},{},{},{},{}]".format(
             self.service_id, self.author, self.content, self.posted, self.found, self.url
         )
-
-
-class TwitterPost(EngagementPost):
-    def __init__(self, service_id, author, content, posted, found, url):
-        super().__init__(service_id, author, content, posted, found, url)
