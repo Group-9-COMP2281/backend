@@ -10,7 +10,8 @@ app.config.from_object(config.get_config('dev'))  # todo dynamically load from c
 mysql = MySQL()
 mysql.init_app(app)
 
-h = handler.DatabaseHandler(mysql.connect())
+conn = mysql.connect()
+h = handler.DatabaseHandler(conn)
 
 # c = twint.Config()
 # c.Limit = 20
@@ -44,6 +45,7 @@ h = handler.DatabaseHandler(mysql.connect())
 # uni_list = [x.lower().strip() for x in uni_list]
 #
 # tweet_unis = {}
+# tweet_contents = []
 # all_tweets = []
 # counter = 0
 #
@@ -55,22 +57,27 @@ h = handler.DatabaseHandler(mysql.connect())
 #     new_tweets = twint.output.tweets_list[counter::]
 #
 #     for tweet_object in new_tweets[:]:
-#         if tweet_object.id_str not in tweet_unis:
-#             tweet_unis[tweet_object.id_str] = [uni]
+#         # Removes hashtags and hyperlinks from tweet content
+#         tweet_stripped = re.sub(r'\w+:\/{2}[\d\w-]+(\.[\d\w-]+)*(?:(?:\/[^\s/]*))*', '', tweet_object.tweet).replace(
+#             "#", "")
+#         if tweet_stripped not in tweet_contents:
+#             tweet_contents.append(tweet_stripped)
 #
-#         # If tweet already exists because of mention of another uni name
+#             if tweet_object.id_str not in tweet_unis:
+#                 tweet_unis[tweet_object.id_str] = [uni]
+#
+#             # If tweet already exists because of mention of another uni name
+#             else:
+#                 # Append current uni name to list of uni names of this tweet
+#                 tweet_unis[tweet_object.id_str].append(uni)
+#                 new_tweets.remove(tweet_object)
 #         else:
-#             # Append current uni name to list of uni names of this tweet
-#             tweet_unis[tweet_object.id_str].append(uni)
 #             new_tweets.remove(tweet_object)
 #
 #     all_tweets += new_tweets
 #
 #     # Update counter to length of entire list, to be able to slice from this point in the next loop
 #     counter = len(twint.output.tweets_list)
-#
-# conn = mysql.connect()
-# h = handler.DatabaseHandler(conn)
 #
 # # Uncomment if you want to delete all rows in Post and University table before adding new rows
 # # h.delete_all_posts()
