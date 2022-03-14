@@ -1,4 +1,5 @@
 import flask
+import werkzeug.exceptions
 from flask import Flask
 from flask import request
 from flaskext.mysql import MySQL
@@ -14,6 +15,7 @@ mysql.init_app(app)
 
 conn = mysql.connect()
 h = handler.DatabaseHandler(conn)
+
 
 # c = twint.Config()
 # c.Limit = 20
@@ -114,6 +116,11 @@ def add_headers(response):
     response.headers.add('Access-Control-Allow-Origin', '*')
 
     return response
+
+
+@app.errorhandler(404)
+def page_not_found():
+    return flask.jsonify({'error': 'unknown route'}), 404
 
 
 if __name__ == '__main__':

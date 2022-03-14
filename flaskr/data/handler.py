@@ -70,11 +70,11 @@ class DatabaseHandler:
     def get_posts_where(self, cursor=None, min_id=-1):
         cursor = self._get_cursor(cursor)
 
-        query = "SELECT * FROM `Post`"
+        query = "SELECT * FROM `Post` JOIN `University` ON `Post`.`post_id` = `University`.`post_id`"
         vars = []
 
         if min_id > -1:
-            query += " WHERE `post_id` >= %s"
+            query += " WHERE `Post`.`post_id` >= %s"
             vars.append(min_id)
 
         query += ';'
