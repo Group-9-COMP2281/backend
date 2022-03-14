@@ -10,7 +10,7 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
 
-def create_slide(uni_list, body_text):
+def create_slide(uni_list, body_text, date, link):
     # If modifying these scopes, delete the file token.json.
     SCOPES = ['https://www.googleapis.com/auth/presentations']
 
@@ -24,6 +24,8 @@ def create_slide(uni_list, body_text):
     for uni in uni_list:
         title_text += uni.capitalize() + ", "
     title_text = title_text[:-2:]
+
+    body_text = body_text + "\n" + date + "\n" + link
 
     if os.path.exists('token.json'):
         creds = Credentials.from_authorized_user_file('token.json', SCOPES)
@@ -79,4 +81,4 @@ def create_slide(uni_list, body_text):
 
 
 if __name__ == "__main__":
-    create_slide(['title'], 'Body of slide')
+    create_slide(['title'], 'Body of slide', "Date", "link")
