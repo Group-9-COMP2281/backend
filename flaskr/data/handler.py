@@ -67,23 +67,15 @@ class DatabaseHandler:
         if commit:
             self.conn.commit()
 
-    def get_posts_where(self, cursor=None, min_id=-1, min_dt=None):
+    def get_posts_where(self, cursor=None, min_id=-1):
         cursor = self._get_cursor(cursor)
 
         query = "SELECT * FROM `Post`"
-        clauses = []
         vars = []
 
         if min_id > -1:
-            clauses.append('(`post_id` > %s)')
+            query += " WHERE `post_id` >= %s"
             vars.append(min_id)
-        if min_dt:
-            clauses.append('(`date_posted` > %s)')
-            vars.append(min_dt)
-
-        if len(clauses):
-            query += ' WHERE '
-            query += ' AND '.join(clauses)
 
         query += ';'
 

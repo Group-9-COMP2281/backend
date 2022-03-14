@@ -1,4 +1,5 @@
 from flask import Flask
+from flask import request
 from flaskext.mysql import MySQL
 
 import config
@@ -101,7 +102,9 @@ h = handler.DatabaseHandler(conn)
 
 @app.route('/api/engagements', methods=['GET'])
 def engagements():
-    posts = [x.to_json() for x in h.get_posts_where()]
+    min_id = request.args.get('min_id', type=int, default=-1)
+
+    posts = [x.to_json() for x in h.get_posts_where(min_id=min_id)]
     return {'posts': posts}
 
 

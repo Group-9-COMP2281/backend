@@ -9,6 +9,7 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
+
 def create_slide(uni_list, body_text):
     # If modifying these scopes, delete the file token.json.
     SCOPES = ['https://www.googleapis.com/auth/presentations']
@@ -16,15 +17,14 @@ def create_slide(uni_list, body_text):
     # The ID of a sample presentation.
     PRESENTATION_ID = '1VGiN6EZCzKODESY1pbyOpd0I5qqUqJKym-BtWX_XKFY'
 
-    gen_uuid = lambda : str(uuid.uuid4())  # get random UUID string
-
+    gen_uuid = lambda: str(uuid.uuid4())  # get random UUID string
     creds = None
-    
+
     title_text = ""
     for uni in uni_list:
         title_text += uni.capitalize() + ", "
     title_text = title_text[:-2:]
-    
+
     if os.path.exists('token.json'):
         creds = Credentials.from_authorized_user_file('token.json', SCOPES)
     # If there are no (valid) credentials available, let the user log in.
@@ -48,17 +48,17 @@ def create_slide(uni_list, body_text):
 
         requests = [
             {
-            'createSlide': {
-                'objectId': slide_id,
-                'slideLayoutReference': {'predefinedLayout': 'TITLE_AND_BODY'},
-                'placeholderIdMappings': [
+                'createSlide': {
+                    'objectId': slide_id,
+                    'slideLayoutReference': {'predefinedLayout': 'TITLE_AND_BODY'},
+                    'placeholderIdMappings': [
                         {
-                        'objectId': title_id,
-                        'layoutPlaceholder': {'type': 'TITLE', 'index': 0}
+                            'objectId': title_id,
+                            'layoutPlaceholder': {'type': 'TITLE', 'index': 0}
                         },
                         {
-                        'objectId': body_id,
-                        'layoutPlaceholder': {'type': 'BODY', 'index': 0}                
+                            'objectId': body_id,
+                            'layoutPlaceholder': {'type': 'BODY', 'index': 0}
                         }
                     ]
                 }
@@ -76,6 +76,7 @@ def create_slide(uni_list, body_text):
         presentation = service.presentations().batchUpdate(body=body, presentationId=PRESENTATION_ID).execute()
     except HttpError as err:
         print(err)
+
 
 if __name__ == "__main__":
     create_slide(['title'], 'Body of slide')
