@@ -5,7 +5,7 @@ SET time_zone = "+00:00";
 --
 -- Database: `engagement-db`
 --
-CREATE DATABASE IF NOT EXISTS `engagement-db` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+CREATE DATABASE IF NOT EXISTS `engagement-db` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 USE `engagement-db`;
 
 -- --------------------------------------------------------
@@ -18,7 +18,7 @@ CREATE TABLE `Attachment` (
   `attachment_id` int NOT NULL,
   `post_id` int NOT NULL,
   `url` varchar(2048) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -34,7 +34,7 @@ CREATE TABLE `Post` (
   `date_posted` datetime NOT NULL,
   `date_found` datetime NOT NULL,
   `url` varchar(280) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -45,7 +45,7 @@ CREATE TABLE `Post` (
 CREATE TABLE `University` (
   `university_name` varchar(100) NOT NULL,
   `post_id` int NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Indexes for dumped tables
@@ -87,7 +87,3 @@ ALTER TABLE `Attachment`
 ALTER TABLE `Post`
   MODIFY `post_id` int NOT NULL AUTO_INCREMENT;
 COMMIT;
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
