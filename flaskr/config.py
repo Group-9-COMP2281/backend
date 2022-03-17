@@ -2,11 +2,13 @@ class Config(object):
     DEBUG = False
     DEVELOPMENT = False
 
+    PORT = 8081
+
     # todo, load from file?
     MYSQL_DATABASE_USER = 'root'
 
     #Enter password here
-    MYSQL_DATABASE_PASSWORD = ''
+    MYSQL_DATABASE_PASSWORD = 'root'
     
     MYSQL_DATABASE_DB = 'engagement-db'
     MYSQL_DATABASE_HOST = 'localhost'

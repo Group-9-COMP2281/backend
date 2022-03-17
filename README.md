@@ -1,3 +1,6 @@
+# RUN
+To run the project, use `waitress-serve --call 'run:create'` NOT `python run.py`
+
 # Backend for Panel
 This is the repository containing the code and files pertaining to the backend. Your project should have a virtual
 environment with all the packages installed. Before each commit, please ensure `requirements.txt` has been updated!
